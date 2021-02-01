@@ -75,13 +75,16 @@
 
 <script>
 import Task from './Task.vue';
+import {TaskModel} from '../models/task';
+
 const localStorageKey = 'tasks-list-data';
+
 export default {
   components: { Task },
   created() {
     let items = localStorage.getItem(localStorageKey);
     if (items) {
-      this.items = JSON.parse(items);
+      this.items = JSON.parse(items).map((item) => new TaskModel(item));
     }
   },
   data() {
@@ -92,14 +95,8 @@ export default {
   },
   methods: {
     addItem() {
-      let item = {
-        title: '',
-        description: '',
-        checked: false,
-        editing: true,
-        time: null
-      };
-      this.items.push(item);
+
+      this.items.push(new TaskModel());
       setTimeout(() => {
         window.scrollTo({
           top: document.body.scrollHeight,
@@ -119,6 +116,8 @@ export default {
         (buttonIndex) => {
           if (buttonIndex == 1) {
             this.removeItemFromList(item);
+            item.dispose();
+
             this.saveData();
           }
         },
@@ -127,7 +126,7 @@ export default {
       );
     },
     saveData() {
-      let items = JSON.stringify(this.items);
+      let items = JSON.stringify(this.items.map(i => i.getData()));
       localStorage.setItem(localStorageKey, items);
     }
   }

@@ -41,7 +41,9 @@
         {{ task.description }}
       </div>
 
-      <div v-if="time">
+      <div v-if="time" class="task__time" :style="{
+        color: task.expired ? 'red' : ''
+      }">
         <Notification></Notification>
         {{ time }}
       </div>
@@ -209,6 +211,10 @@
     margin-bottom: 0.75em;
   }
 
+  .task__time {
+    margin-top: 0.75em;
+  }
+
   .notification-icon {
     margin-right: 8px;
     vertical-align: middle;
@@ -218,8 +224,14 @@
 
 <script>
 import Notification from './Notification';
+let notificationId = 1;
 export default {
   components: { Notification },
+  created() {
+    cordova.plugins.notification.local.getIds((ids) => {
+      if (ids.length) notificationId = Math.max(...ids) + 1;
+    });
+  },
   props: ['task'],
   methods: {
     toggle() {
@@ -228,6 +240,14 @@ export default {
     },
     save() {
       if (!this.task.title) return;
+
+      this.task.removeNotification();
+
+      if (!this.task.notificationId) {
+        this.task.notificationId = notificationId++;
+      }
+
+      this.task.setNotification();
 
       this.task.editing = false;
       this.$emit('change');
@@ -240,7 +260,8 @@ export default {
         mode: 'datetime',
         date: this.task.time ? new Date(this.task.time) : new Date(Date.now()),
         success: (newDate) => {
-          this.task.time = new Date(newDate).getTime();
+          let time = new Date(newDate).getTime();
+          this.task.setTime(time);
         }
       });
     }
@@ -248,9 +269,7 @@ export default {
   computed: {
     time() {
       if (this.task.time) {
-        if (Date.now() > this.task.time) return '';
-
-        return date.toLocaleDateString('ru-RU', {
+        return new Date(this.task.time).toLocaleDateString('ru-RU', {
           day: 'numeric',
           month: 'long',
           hour: '2-digit',

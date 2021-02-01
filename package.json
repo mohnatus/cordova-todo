@@ -8,6 +8,8 @@
     "serve": "cross-env NODE_ENV=development webpack serve",
     "build": "cross-env NODE_ENV=production webpack",
     "emulate": "npm run build && cordova emulate android",
+    "device": "npm run build && cordova run android",
+
     "watch": "cross-env NODE_ENV=development webpack --watch"
   },
   "keywords": [
@@ -25,7 +27,10 @@
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^3.0.0",
     "cordova-android": "^9.0.0",
+    "cordova-plugin-badge": "^0.8.8",
+    "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-dialogs": "^2.0.2",
+    "cordova-plugin-local-notification": "^0.9.0-beta.2",
     "cordova-plugin-whitelist": "^1.3.4",
     "cross-env": "^7.0.3",
     "css-loader": "^5.0.1",
@@ -46,7 +51,8 @@
     "plugins": {
       "cordova-plugin-whitelist": {},
       "cordova-plugin-dialogs": {},
-      "skwas-cordova-plugin-datetimepicker": {}
+      "skwas-cordova-plugin-datetimepicker": {},
+      "cordova-plugin-local-notification": {}
     },
     "platforms": [
       "android"
