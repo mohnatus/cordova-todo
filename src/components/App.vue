@@ -113,8 +113,17 @@ export default {
       this.items.splice(index, 1);
     },
     removeItem(item) {
-      this.removeItemFromList(item);
-      this.saveData();
+      navigator.notification.confirm(
+        `Дело ${item.title} будет удалено навсегда`,
+        (buttonIndex) => {
+          if (buttonIndex == 1) {
+            this.removeItemFromList(item);
+            this.saveData();
+          }
+        },
+        'Подтвердите удаление',
+        ['Удалить', 'Отменить']
+      );
     },
     saveData() {
       let items = JSON.stringify(this.items);
