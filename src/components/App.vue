@@ -96,7 +96,8 @@ export default {
         title: '',
         description: '',
         checked: false,
-        editing: true
+        editing: true,
+        time: null
       };
       this.items.push(item);
       setTimeout(() => {

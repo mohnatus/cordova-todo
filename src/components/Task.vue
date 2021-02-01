@@ -18,6 +18,13 @@
           v-model="task.description"
         ></textarea>
       </div>
+
+      <div class="task-editor__time" @click="selectTime">
+        <Notification></Notification>
+
+        <span v-if="time">{{ time }}</span>
+        <span v-else>Напоминание</span>
+      </div>
     </div>
 
     <div class="task-view" v-else>
@@ -32,6 +39,11 @@
 
       <div v-if="task.description" class="task__description">
         {{ task.description }}
+      </div>
+
+      <div v-if="time">
+        <Notification></Notification>
+        {{ time }}
       </div>
     </div>
 
@@ -196,11 +208,18 @@
     font-weight: bold;
     margin-bottom: 0.75em;
   }
+
+  .notification-icon {
+    margin-right: 8px;
+    vertical-align: middle;
+  }
 }
 </style>
 
 <script>
+import Notification from './Notification';
 export default {
+  components: { Notification },
   props: ['task'],
   methods: {
     toggle() {
@@ -215,6 +234,31 @@ export default {
     },
     remove() {
       this.$emit('remove');
+    },
+    selectTime() {
+      cordova.plugins.DateTimePicker.show({
+        mode: 'datetime',
+        date: this.task.time ? new Date(this.task.time) : new Date(Date.now()),
+        success: (newDate) => {
+          this.task.time = new Date(newDate).getTime();
+        }
+      });
+    }
+  },
+  computed: {
+    time() {
+      if (this.task.time) {
+        if (Date.now() > this.task.time) return '';
+
+        return date.toLocaleDateString('ru-RU', {
+          day: 'numeric',
+          month: 'long',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+
+      return '';
     }
   }
 };
